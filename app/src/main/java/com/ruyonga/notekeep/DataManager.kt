@@ -1,11 +1,12 @@
 package com.ruyonga.notekeep
 
-class DataManager {
+object DataManager {
     val courses = HashMap<String, CourseInfo>()
     val notes = ArrayList<NoteInfo>()
 
     init {
         initialzeCourses()
+        initializeNotes()
     }
 
     private fun initialzeCourses() {
@@ -18,5 +19,15 @@ class DataManager {
 
         course = CourseInfo("java_core", "The fundamental The core platform")
         courses.set(course.courseId, course)
+    }
+
+
+    private fun initializeNotes() {
+        var mynote = NoteInfo(courses["android_intents"]!!, "Learning Intents", "Thi is  along text")
+        notes.add(mynote)
+
+
+         mynote = NoteInfo(courses["android_sync"]!!, "Learning Async", "Thi is  along text")
+        notes.add(mynote)
     }
 }
