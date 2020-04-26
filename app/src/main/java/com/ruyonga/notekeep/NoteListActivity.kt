@@ -2,7 +2,6 @@ package com.ruyonga.notekeep
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_note_list.*
@@ -25,9 +24,16 @@ class NoteListActivity : AppCompatActivity() {
         listNotes.setOnItemClickListener{ parent, view, position, id ->
 
             val activityIntent = Intent(this, MainActivity::class.java)
-                activityIntent.putExtra(EXTRA_NOTE_POSITION, position)
+                activityIntent.putExtra(NOTE_POSITION, position)
             startActivity(activityIntent)
         }
 
     }
+
+    override fun onResume() {
+        super.onResume()
+
+        (listNotes.adapter as ArrayAdapter<NoteInfo>).notifyDataSetChanged()
+    }
 }
+

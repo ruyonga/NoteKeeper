@@ -1,7 +1,6 @@
 package com.ruyonga.notekeep
 
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
@@ -11,7 +10,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity() {
-    private  var notePosition = POSITION_NOT_SET
+    private var notePosition = POSITION_NOT_SET
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,15 +18,21 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
 
-        val adapterCourses = ArrayAdapter<CourseInfo>(this, android.R.layout.simple_spinner_item,
-            DataManager.courses.values.toList())
+        val adapterCourses = ArrayAdapter<CourseInfo>(
+            this, android.R.layout.simple_spinner_item,
+            DataManager.courses.values.toList()
+        )
         adapterCourses.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerCourses.adapter = adapterCourses
 
 
-        notePosition = intent.getIntExtra(EXTRA_NOTE_POSITION, POSITION_NOT_SET)
-        if (notePosition != POSITION_NOT_SET){
+        notePosition = savedInstanceState?.getInt(NOTE_POSITION, POSITION_NOT_SET)?:
+                intent.getIntExtra(NOTE_POSITION, POSITION_NOT_SET)
+        if (notePosition != POSITION_NOT_SET) {
             displayNote()
+        } else {
+            DataManager.notes.add(NoteInfo())
+            notePosition = DataManager.notes.lastIndex
         }
 
     }
@@ -41,10 +46,35 @@ class MainActivity : AppCompatActivity() {
         spinnerCourses.setSelection(coursePosition)
     }
 
+
+    private fun moveNext() {
+        ++notePosition
+        displayNote()
+        invalidateOptionsMenu()
+    }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
+    }
+
+
+    override fun onPause() {
+        super.onPause()
+
+        saveNote()
+    }
+
+    private fun saveNote() {
+        val note = DataManager.notes[notePosition]
+        note.title = textNotesTitle.text.toString()
+        note.text = textNoteText.text.toString()
+        note.course = spinnerCourses.selectedItem as CourseInfo
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        outState?.putInt(NOTE_POSITION, notePosition)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -55,28 +85,21 @@ class MainActivity : AppCompatActivity() {
             R.id.action_settings -> true
             R.id.action_next -> {
                 moveNext()
-              true
+                true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-    private fun moveNext() {
-        ++notePosition
-        displayNote()
-        invalidateOptionsMenu()
-    }
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        if(notePosition >= DataManager.notes.lastIndex){
+        if (notePosition >= DataManager.notes.lastIndex) {
             val menuItem = menu?.findItem(R.id.action_next)
-            if (menuItem != null){
+            if (menuItem != null) {
                 menuItem.icon = getDrawable(R.drawable.ic_block_white_24dp)
-                menuItem.isEnabled= false
+                menuItem.isEnabled = false
             }
         }
 
         return super.onPrepareOptionsMenu(menu)
     }
-
-
 }
