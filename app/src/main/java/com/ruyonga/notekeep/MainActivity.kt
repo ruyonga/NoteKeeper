@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
+import com.google.android.material.snackbar.Snackbar
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -23,6 +24,7 @@ class MainActivity : AppCompatActivity() {
             DataManager.courses.values.toList()
         )
         adapterCourses.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
         spinnerCourses.adapter = adapterCourses
 
 
@@ -31,13 +33,22 @@ class MainActivity : AppCompatActivity() {
         if (notePosition != POSITION_NOT_SET) {
             displayNote()
         } else {
-            DataManager.notes.add(NoteInfo())
-            notePosition = DataManager.notes.lastIndex
+            createNewNote()
         }
 
     }
 
+    private fun createNewNote() {
+        DataManager.notes.add(NoteInfo())
+        notePosition = DataManager.notes.lastIndex
+    }
+
     private fun displayNote() {
+        if(notePosition > DataManager.notes.lastIndex){
+            showMessage("Note not found")
+            return
+        }
+
         val note = DataManager.notes[notePosition]
         textNotesTitle.setText(note.title)
         textNoteText.setText(note.text)
@@ -84,11 +95,22 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_settings -> true
             R.id.action_next -> {
-                moveNext()
+                if(notePosition < DataManager.notes.lastIndex){
+                    moveNext()
+                }else {
+                    val message = "No More notes"
+                    showMessage(message)
+
+                }
+
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun showMessage(message: String) {
+        Snackbar.make(textNotesTitle, message, Snackbar.LENGTH_LONG).show()
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
