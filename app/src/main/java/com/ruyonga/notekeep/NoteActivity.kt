@@ -83,9 +83,9 @@ class NoteActivity : AppCompatActivity() {
         note.course = spinnerCourses.selectedItem as CourseInfo
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState?.putInt(NOTE_POSITION, notePosition)
+        outState.putInt(NOTE_POSITION, notePosition)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

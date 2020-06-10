@@ -31,7 +31,7 @@ class NoteListActivityTest {
         val appCompatTextView = onData(anything())
             .inAdapterView(
                 allOf(
-                    withId(R.id.listNotes),
+                    withId(R.id.listitems),
                     childAtPosition(
                         withClassName(`is`("androidx.constraintlayout.widget.ConstraintLayout")),
                         0
